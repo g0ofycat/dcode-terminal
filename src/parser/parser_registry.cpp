@@ -73,10 +73,7 @@ bool Parser::match(TokenType type) const noexcept
 /// @return bool
 bool Parser::match_flag() const noexcept
 {
-    return match(TokenType::FLAG)
-        || match(TokenType::FLAG_WITH_MODE)
-        || match(TokenType::LONG_FLAG)
-        || match(TokenType::LONG_FLAG_WITH_MODE);
+    return match(TokenType::FLAG) || match(TokenType::FLAG_WITH_MODE);
 }
 
 // ======================
@@ -158,9 +155,7 @@ Op Parser::parse_op()
     if (!info)
         throw ParseError(make_parse_error(tok.lexeme));
 
-    bool is_long = tok.type == TokenType::LONG_FLAG || tok.type == TokenType::LONG_FLAG_WITH_MODE;
-
-    if (is_long && info->role == FlagRole::Pipeline)
+    if (tok.is_long && info->role == FlagRole::Pipeline)
         throw ParseError("Unknown flag: '--" + std::string(tok.lexeme) + "'");
 
     OpMode mode = resolve_mode(tok.suffix);

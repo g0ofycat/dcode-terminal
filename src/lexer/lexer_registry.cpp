@@ -34,22 +34,15 @@ std::vector<Token> Lexer::lex()
 
         if (type == TokenType::FLAG)
         {
-            std::string_view stripped = strip_dashes(raw);
+            bool is_long = (raw.size() >= 2 && raw[0] == '-' && raw[1] == '-');
             std::string_view suffix;
-            std::string_view name = strip_suffix(stripped, suffix);
+            std::string_view name = strip_suffix(strip_dashes(raw), suffix);
 
             if (!suffix.empty() && !valid_suffix(suffix))
                 throw LexError(make_lex_error(raw));
 
-            bool is_long = (raw.size() >= 2 && raw[0] == '-' && raw[1] == '-');
-
-            TokenType final_type;
-            if (is_long)
-                final_type = suffix.empty() ? TokenType::LONG_FLAG : TokenType::LONG_FLAG_WITH_MODE;
-            else
-                final_type = suffix.empty() ? TokenType::FLAG : TokenType::FLAG_WITH_MODE;
-
-            tokens.push_back(Token{ name, suffix, final_type });
+            TokenType final_type = suffix.empty() ? TokenType::FLAG : TokenType::FLAG_WITH_MODE;
+            tokens.push_back(Token{ name, suffix, final_type, is_long });
             continue;
         }
 

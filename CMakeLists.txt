@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_executable(main
+    testing/parser_test.cpp
     src/parser/parser_registry.cpp
     src/errors/error_registry.cpp
     src/lexer/lexer_registry.cpp
