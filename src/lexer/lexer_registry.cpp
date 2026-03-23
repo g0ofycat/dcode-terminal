@@ -1,6 +1,3 @@
-#include <string_view>
-#include <vector>
-
 #include "lexer.hpp"
 #include "../errors/error.hpp"
 
@@ -28,20 +25,38 @@ std::vector<Token> Lexer::lex()
 
     for (int i = 1; i < _argc; ++i)
     {
-        std::string_view lexeme{ _argv[i] };
+        std::string_view raw{ _argv[i] };
 
-        if (lexeme.empty())
-            throw LexError(make_lex_error(lexeme));
+        if (raw.empty())
+            throw LexError(make_lex_error(raw));
 
-        TokenType type = classify(lexeme);
+        TokenType type = classify(raw);
 
         if (type == TokenType::FLAG)
-            lexeme = strip_dashes(lexeme);
+        {
+            std::string_view stripped = strip_dashes(raw);
+            std::string_view suffix;
+            std::string_view name = strip_suffix(stripped, suffix);
 
-        tokens.push_back(Token{ lexeme, type });
+            if (!suffix.empty() && !valid_suffix(suffix))
+                throw LexError(make_lex_error(raw));
+
+            bool is_long = (raw.size() >= 2 && raw[0] == '-' && raw[1] == '-');
+
+            TokenType final_type;
+            if (is_long)
+                final_type = suffix.empty() ? TokenType::LONG_FLAG : TokenType::LONG_FLAG_WITH_MODE;
+            else
+                final_type = suffix.empty() ? TokenType::FLAG : TokenType::FLAG_WITH_MODE;
+
+            tokens.push_back(Token{ name, suffix, final_type });
+            continue;
+        }
+
+        tokens.push_back(Token{ raw, {}, type });
     }
 
-    tokens.push_back(Token{ "", TokenType::END });
+    tokens.push_back(Token{ "", {}, TokenType::END });
 
     return tokens;
 }
@@ -75,4 +90,30 @@ std::string_view Lexer::strip_dashes(std::string_view s) noexcept
         ++i;
 
     return s.substr(i);
+}
+
+/// @brief Strip the mode suffix from a flag lexeme
+/// @param s: The stripped flag string
+/// @param out_suffix: The suffix if found
+/// @return The flag name without suffix
+std::string_view Lexer::strip_suffix(std::string_view s, std::string_view& out_suffix) noexcept
+{
+    auto sep = s.find('=');
+
+    if (sep == std::string_view::npos)
+    {
+        out_suffix = {};
+        return s;
+    }
+
+    out_suffix = s.substr(sep + 1);
+    return s.substr(0, sep);
+}
+
+/// @brief Validate a mode suffix
+/// @param suffix: The suffix to validate
+/// @return True if valid
+bool Lexer::valid_suffix(std::string_view suffix) noexcept
+{
+    return suffix == "e" || suffix == "d";
 }

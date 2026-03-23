@@ -1,13 +1,11 @@
 #ifndef PARSER_HPP
 #define PARSER_HPP
 
-#include <string_view>
 #include <vector>
 #include <optional>
 
 #include "./tokens/token_data.hpp"
 #include "../lexer/lexer.hpp"
-#include "../errors/error.hpp"
 
 // ======================
 // -- Op
@@ -17,6 +15,7 @@ struct Op
 {
     std::string_view flag;
     std::optional<std::string_view> value;
+    OpMode mode = OpMode::Default;
 };
 
 // ======================
@@ -26,7 +25,12 @@ struct Op
 struct ParsedArgs
 {
     std::optional<std::string_view> subcommand;
+    std::optional<std::string_view> input;
+
     std::vector<Op> pipeline;
+
+    bool global_decode = false;
+    bool global_encode = false;
 };
 
 // ======================
@@ -50,8 +54,8 @@ class Parser
         // ======================
 
         /// @brief Run the full parse
-        /// @return ParsedArgs: with ordered pipeline and optional subcommand
-        /// @throws ParseError: on unknown flag or malformed input
+        /// @return ParsedArgs with ordered pipeline and optional subcommand
+        /// @throws ParseError: On unknown flag or malformed input
         [[nodiscard]] ParsedArgs parse();
 
     private:
@@ -87,6 +91,10 @@ class Parser
         /// @return bool
         [[nodiscard]] bool match(TokenType type) const noexcept;
 
+        /// @brief Check if the current token is any flag type
+        /// @return bool
+        [[nodiscard]] bool match_flag() const noexcept;
+
         // ======================
         // -- PARSING
         // ======================
@@ -101,8 +109,13 @@ class Parser
 
         /// @brief Consume one flag and optional value into an Op
         /// @return Op
-        /// @throws ParseError: On unknown flag
+        /// @throws ParseError: On unknown flag or invalid mode suffix
         [[nodiscard]] Op parse_op();
+
+        /// @brief Resolve OpMode from a token suffix
+        /// @param suffix: The suffix string_view from the token
+        /// @return OpMode
+        [[nodiscard]] static OpMode resolve_mode(std::string_view suffix) noexcept;
 };
 
 #endif

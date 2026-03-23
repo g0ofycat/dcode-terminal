@@ -4,15 +4,17 @@
 #include <string_view>
 #include <array>
 
+#include "../tokens/token_data.hpp"
+
 // ======================
 // -- FlagInfo
 // ======================
 
-/// @brief Metadata for a known flag
 struct FlagInfo
 {
     std::string_view name;
     bool takes_value;
+    FlagRole role;
     std::string_view description;
 };
 
@@ -22,10 +24,11 @@ struct FlagInfo
 
 inline constexpr std::array VALID_FLAGS =
 {
-    FlagInfo{ "b64", false, "Base64 encode/decode" },
-    FlagInfo{ "r", false, "Reverse the input" },
-    FlagInfo{ "e", false, "Encode the input" },
-    FlagInfo{ "d", false, "Decode the input" }
+    FlagInfo{ "i", true, FlagRole::Input, "Input string" },
+    FlagInfo{ "d", false, FlagRole::GlobalDecode, "Decode the input" },
+    FlagInfo{ "e", false, FlagRole::GlobalEncode, "Encode the input" },
+    FlagInfo{ "b64", false, FlagRole::Pipeline, "Base64 encode/decode" },
+    FlagInfo{ "r", false, FlagRole::Pipeline, "Reverse the input" },
 };
 
 // ======================
@@ -38,10 +41,7 @@ inline constexpr std::array VALID_FLAGS =
 [[nodiscard]] inline constexpr const FlagInfo* lookup_flag(std::string_view name) noexcept
 {
     for (const auto& f : VALID_FLAGS) {
-        if (f.name != name)
-            continue;
-
-        return &f;
+        if (f.name == name) return &f;
     }
 
     return nullptr;

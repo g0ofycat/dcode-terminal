@@ -52,6 +52,17 @@ class Lexer
         /// @param s: The flag string
         /// @return Stripped string_view
         [[nodiscard]] static std::string_view strip_dashes(std::string_view s) noexcept;
+
+        /// @brief Strip the mode suffix from a flag lexeme
+        /// @param s: The stripped flag string
+        /// @param out_suffix: The suffix if found
+        /// @return The flag name without suffix
+        [[nodiscard]] static std::string_view strip_suffix(std::string_view s, std::string_view& out_suffix) noexcept;
+
+        /// @brief Validate a mode suffix
+        /// @param suffix: The suffix to validate
+        /// @return True if valid
+        [[nodiscard]] static bool valid_suffix(std::string_view suffix) noexcept;
 };
 
 #endif
