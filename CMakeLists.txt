@@ -6,15 +6,16 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_executable(main
-    testing/parser_test.cpp
+add_executable(dcode
+    usage/main.cpp
     src/parser/parser_registry.cpp
     src/errors/error_registry.cpp
     src/lexer/lexer_registry.cpp
 )
 
-target_include_directories(main PRIVATE
+target_include_directories(dcode PRIVATE
     src/errors
+    src/executor
     src/lexer
     src/libs
     src/parser
@@ -22,7 +23,6 @@ target_include_directories(main PRIVATE
     src/parser/tokens
 )
 
-target_link_options(main PRIVATE
-    -static-libgcc
-    -static-libstdc++
-)
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    target_link_options(dcode PRIVATE -static-libgcc -static-libstdc++)
+endif()
