@@ -8,20 +8,18 @@
 static void print_usage()
 {
     std::cout <<
-        "usage: dcode -i <input> [-e|-d] <ops...>\n"
+        "usage: dcode -i <input> <ops...> [--e|--d]\n"
+        "\n"
+        "notes: last flags for encoding and decoding override normal ops (default is encoding). you can specify if you want encoded or decoded ops manually by doing something like -b64=e OR -b64=d and etc. input and ops position are interchangeable (they can be anywhere). manual coding ops for specific flags override the last flag [--e|--d]"
         "\n"
         "mode flags:\n"
-        "  -e           encode\n"
-        "  -d           decode\n"
+        "  --e          encode\n"
+        "  --d          decode\n"
         "\n"
         "pipeline ops:\n"
         "  -b64         base64\n"
         "  -r           reverse\n"
-        "\n"
-        "examples:\n"
-        "  dcode -i \"hello world\" -e -b64\n"
-        "  dcode -i \"aGVsbG8gd29ybGQ=\" -d -b64\n"
-        "  dcode -i \"hello\" -e -b64 -r\n";
+        "\n";
 }
 
 int main(int argc, const char* argv[])
