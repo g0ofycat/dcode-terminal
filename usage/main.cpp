@@ -22,7 +22,7 @@ static void print_usage()
         if (!f.usage_hint.empty())
             col += " " + std::string(f.usage_hint);
 
-        constexpr int COL_WIDTH = 20;
+        const int COL_WIDTH = 20;
         if ((int)col.size() < COL_WIDTH)
             col += std::string(COL_WIDTH - col.size(), ' ');
 
