@@ -16,6 +16,7 @@ struct FlagInfo
     bool takes_value;
     FlagRole role;
     std::string_view description;
+    std::string_view usage_hint;
 };
 
 // ======================
@@ -24,11 +25,11 @@ struct FlagInfo
 
 inline constexpr std::array VALID_FLAGS =
 {
-    FlagInfo{ "i", true, FlagRole::Input, "Input string" },
-    FlagInfo{ "d", false, FlagRole::GlobalDecode, "Decode the input" },
-    FlagInfo{ "e", false, FlagRole::GlobalEncode, "Encode the input" },
-    FlagInfo{ "b64", false, FlagRole::Pipeline, "Base64 encode/decode" },
-    FlagInfo{ "r", false, FlagRole::Pipeline, "Reverse the input" },
+    FlagInfo{ "i", true, FlagRole::Input, "Input string", "<input>" },
+    FlagInfo{ "d", false, FlagRole::GlobalDecode, "Decode the input", "" },
+    FlagInfo{ "e", false, FlagRole::GlobalEncode, "Encode the input", "" },
+    FlagInfo{ "b64", false, FlagRole::Pipeline, "Base64 encode/decode", "" },
+    FlagInfo{ "r", false, FlagRole::Pipeline, "Reverse the input", "" },
 };
 
 // ======================

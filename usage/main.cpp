@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "../src/parser/parser.hpp"
+#include "../src/parser/flags/valid_flags.hpp"
 #include "../src/executor/executor.hpp"
 #include "../src/errors/error.hpp"
 
@@ -13,19 +14,26 @@ static void print_usage()
         "Usage:\n"
         "  dcode -i <input> [ops...] [--e|--d]\n"
         "\n"
-        "Ops:\n"
-        "  -b64        base64\n"
-        "  -r          reverse\n"
-        "\n"
-        "Modes:\n"
-        "  --e         encode (default)\n"
-        "  --d         decode\n"
-        "\n"
-        "Rules:\n"
+        "Flags:\n";
+
+    for (const auto& f : VALID_FLAGS)
+    {
+        std::string col = "  -" + std::string(f.name);
+        if (!f.usage_hint.empty())
+            col += " " + std::string(f.usage_hint);
+
+        constexpr int COL_WIDTH = 20;
+        if ((int)col.size() < COL_WIDTH)
+            col += std::string(COL_WIDTH - col.size(), ' ');
+
+        std::cout << col << f.description << "\n";
+    }
+
+    std::cout <<
+        "\nRules:\n"
         "  last --e/--d wins\n"
         "  op=e|d overrides mode\n"
-        "  order of input/ops doesn't matter\n"
-        "\n";
+        "  order of input/ops doesn't matter\n\n";
 }
 
 int main(int argc, const char* argv[])
